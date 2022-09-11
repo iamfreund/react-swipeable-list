@@ -14,11 +14,11 @@ const ActionAnimation = {
 };
 
 const DragDirection = {
-  UP: "up",
-  DOWN: "down",
-  LEFT: "left",
-  RIGHT: "right",
-  UNKNOWN: "unknown",
+  UP: 'up',
+  DOWN: 'down',
+  LEFT: 'left',
+  RIGHT: 'right',
+  UNKNOWN: 'unknown',
 };
 
 const FPS_INTERVAL = 1000 / 60;
@@ -717,6 +717,12 @@ class SwipeableListItem extends PureComponent {
     });
   };
 
+  handleOnClick = () => {
+    const { onClick } = this.props;
+
+    this.isSwiping() ? undefined : onClick();
+  };
+
   bindListElement = ref => (this.listElement = ref);
   bindWrapperElement = ref => (this.wrapperElement = ref);
   bindLeadingActionsElement = ref => (this.leadingActionsElement = ref);
@@ -765,37 +771,36 @@ class SwipeableListItem extends PureComponent {
   };
 
   render() {
-    const { children, className, leadingActions, trailingActions, onClick } =
-      this.props;
+    const { children, className, leadingActions, trailingActions } = this.props;
+    const {
+      bindWrapperElement,
+      bindLeadingActionsElement,
+      bindListElement,
+      handleOnClick,
+      renderActions,
+      bindTrailingActionsElement,
+    } = this;
 
     return (
       <div
         className={clsx('swipeable-list-item', className)}
-        ref={this.bindWrapperElement}
-        onClick={
-          this.leadingActionsOpened || this.trailingActionsOpened
-            ? undefined
-            : onClick
-        }
+        ref={bindWrapperElement}
       >
         {leadingActions &&
-          this.renderActions(
-            leadingActions,
-            'leading',
-            this.bindLeadingActionsElement
-          )}
+          renderActions(leadingActions, 'leading', bindLeadingActionsElement)}
         <div
           className="swipeable-list-item__content"
           data-testid="content"
-          ref={this.bindListElement}
+          ref={bindListElement}
+          onClick={handleOnClick}
         >
           {children}
         </div>
         {trailingActions &&
-          this.renderActions(
+          renderActions(
             trailingActions,
             'trailing',
-            this.bindTrailingActionsElement
+            bindTrailingActionsElement
           )}
       </div>
     );
